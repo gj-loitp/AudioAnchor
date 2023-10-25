@@ -3,6 +3,8 @@ package com.prangesoftwaresolutions.audioanchor.utils;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 
 import com.prangesoftwaresolutions.audioanchor.models.AudioFile;
@@ -24,13 +26,28 @@ public class Utils {
      */
     public static void setActivityTheme(Context context) {
         SharedPreferences prefManager = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean darkTheme = prefManager.getBoolean(context.getString(R.string.settings_dark_key), Boolean.getBoolean(context.getString(R.string.settings_dark_default)));
 
-        if (darkTheme) {
-            context.setTheme(R.style.AppThemeDark);
-        } else {
-            context.setTheme(R.style.AppTheme);
+        String darkTheme;
+        try {
+            darkTheme = prefManager.getString(context.getString(R.string.settings_dark_key), context.getString(R.string.settings_dark_default));
+        } catch (ClassCastException e) {
+            // This is needed so switching from the old version where darkTheme was stored as boolean
+            // to the new version where it is stored as a string works.
+            boolean darkThemeBool = prefManager.getBoolean(context.getString(R.string.settings_dark_key), Boolean.getBoolean(context.getString(R.string.settings_dark_default)));
+            darkTheme = (darkThemeBool) ? context.getString(R.string.settings_dark_theme_true_value) : context.getString(R.string.settings_dark_theme_false_value);
+            SharedPreferences.Editor editor = prefManager.edit();
+            editor.putString(context.getString(R.string.settings_dark_key), darkTheme);
+            editor.apply();
         }
+
+        if (darkTheme.equals(context.getString(R.string.settings_dark_theme_true_value))) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else if (darkTheme.equals(context.getString(R.string.settings_dark_theme_false_value))){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        }
+        context.setTheme(R.style.AppTheme);
     }
 
     /*

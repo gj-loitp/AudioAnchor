@@ -8,13 +8,19 @@ android {
         applicationId = "com.prangesoftwaresolutions.audioanchor"
         minSdk = 19
         targetSdk = 29
-        versionCode = 28
-        versionName = "2.3.2"
+        versionCode = 29
+        versionName = "2.3.3"
     }
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+        }
+
+        debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-DEBUG"
+            isDebuggable = true
         }
     }
     compileOptions {
